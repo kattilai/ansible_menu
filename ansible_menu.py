@@ -166,7 +166,7 @@ def checkdatas():
         print('\t-  FQND neve:  ' + HHLIGHT +  newserver.fqdns + SDARD)
         print('\t- (OLD) neve:  ' + HHLIGHT +  newserver.olddns + SDARD)
 
-        A = input('Megfelelően az adatok (Y/n):')
+        A = input('Megfelelőek az adatok (Y/n):')
         if A == '':
             checkb = 0
         if A == 'Y':
