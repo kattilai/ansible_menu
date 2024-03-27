@@ -7,14 +7,16 @@ import sys
 from colorama import Fore, Back, Style
 
 inv_file = 'inventory.yml'
-XCC = Fore.BLACK + Back.GREEN
-XCX = Style.RESET_ALL + Fore.GREEN
+HHLIGHT = Fore.BLACK + Back.GREEN
+HHLIGHT2 = Fore.BLACK + Back.WHITE
+HHLIGHT3 = Fore.YELLOW + Back.YELLOW
+SDARD = Style.RESET_ALL + Fore.GREEN
 
 
 def clean():
     print(Style.RESET_ALL)
     system('clear')
-    print(XCX)
+    print(SDARD)
 class newserver:
     cip = '10.100.10.1'
     nip = ''
@@ -26,30 +28,41 @@ class newserver:
     nwork = ''
     nmask= '24'
 
-def validateip(ip_string):
+def validateip(tmpdata):
     try:
-        ip_object = ipaddress.ip_address(ip_string)
+        ip_object = ipaddress.ip_address(tmpdata)
+        tmpdata = tmpdata.split(".")
+        print(tmpdata[3])
+        if tmpdata[3] == '0' or tmpdata[3] == '255' or tmpdata[3] == '254':
+            checkb = 1
+        else:
+            checkb = 0
+    except ValueError:
+        checkb = 1
+    return(checkb, tmpdata)
+
+def validatenetip(tmpdata):
+    try:
+        ip_object = ipaddress.ip_address(tmpdata)
         checkb = 0
     except ValueError:
         checkb = 1
-    return(checkb, ip_string)
+    return(checkb, ip_object)
 
-def validatecrd(data) :
-    if data > 0 and data <31:
+
+def validatecrd(tmpdata) :
+    tmpdata = int(tmpdata)
+    if tmpdata > 0 and tmpdata < 31:
         checkb = 0
-        newserver.nmask = data
-        return(checkb, data, newserver.nmask)
+        newserver.nmask = tmpdata
     else:
         checkb = 1
         newserver.nmask = '24'
-        return(checkb, data, newserver.nmask)
-    print(type(data))
-    cdr_string = int(data)
-    print(type(cdr_string))
-    exit()
+    return(checkb, tmpdata, newserver.nmask)
+    
 
-def validatedns(srt_string):
-    ini_str = srt_string.lower()
+def validatedns(tmpdata):
+    ini_str = tmpdata.lower()
     a="abcdefghijklmnopqrstuvwxyz-"
     c=0
     for i in ini_str:
@@ -84,23 +97,25 @@ def readdatas():
             checkb = 0
         if indata != '':    
             checkb, newserver.cip = validateip(indata)
+    newserver.cip='.'.join(newserver.cip)
 
     checkb = 1
     while (checkb != 0) :
         indata = input("A szerver új IP cime: ")
         checkb, newserver.nip = validateip(indata)
-        TEMP = newserver.nip.split(".")
-        TEMP[3] = '0'
-        newserver.nwork = TEMP[0] + "." + TEMP[1] + "." + TEMP[2] + "." + TEMP[3]
-        TEMP[3] = '255'
-        newserver.bcast = TEMP[0] + "." + TEMP[1] + "." + TEMP[2] + "." + TEMP[3]
-        TEMP[3] = '254'
-        newserver.gway = TEMP[0] + "." + TEMP[1] + "." + TEMP[2] + "." + TEMP[3]
+    TEMP = newserver.nip
+    TEMP[3] = '0'
+    newserver.nwork = TEMP[0] + "." + TEMP[1] + "." + TEMP[2] + "." + TEMP[3]
+    TEMP[3] = '255'
+    newserver.bcast = TEMP[0] + "." + TEMP[1] + "." + TEMP[2] + "." + TEMP[3]
+    TEMP[3] = '254'
+    newserver.gway = TEMP[0] + "." + TEMP[1] + "." + TEMP[2] + "." + TEMP[3]
+    newserver.nip='.'.join(newserver.nip)
 
     checkb = 1
     while (checkb != 0) :
         indata = input("A halozati mask (" + str(newserver.nmask) + "): ")
-        indata = int(indata)
+        #indata = int(indata)
         if indata == '':
             indata = newserver.nmask
             checkb = 0
@@ -114,7 +129,7 @@ def readdatas():
             indata = newserver.nwork
             checkb = 0
         if indata != '':
-            checkb, newserver.nwork = validateip(indata)
+            checkb, newserver.nwork = validatenetip(indata)
 
     checkb = 1
     while (checkb != 0) :
@@ -123,7 +138,7 @@ def readdatas():
             indata = newserver.bcast
             checkb = 0
         if indata != '':    
-            checkb, newserver.bcast = validateip(indata)
+            checkb, newserver.bcast = validatenetip(indata)
 
     checkb = 1
     while (checkb != 0) :
@@ -132,24 +147,25 @@ def readdatas():
             indata = newserver.gway
             checkb = 0
         if indata != '':    
-            checkb, newserver.gway = validateip(indata)
+            checkb, newserver.gway = validatenetip(indata)
 
 def checkdatas():
     checkb = 1
     while (checkb != 0):
         clean()
         print('Az alábbi adatoknak megfelelően kerül beállításra a SZERVER. Kérem ellenőrizd, hogy az adatok megfelelőek.\n') 
-        print('A szerver jelenlegi IP cime:\t' + newserver.cip)
         print('Szerver adatai:')
         print('---------------')
-        print('\t-   IP cime:  ' + XCC + newserver.nip + XCX)
-        print('\t-   netmask:  ' + XCC +  str(newserver.nmask) + XCX)
-        print('\t- broadcast:  ' + XCC +  newserver.bcast + XCX)
-        print('\t-   gateway:  ' + XCC +  newserver.gway + XCX)
-        print('\t-   network:  ' + XCC +  newserver.nwork + XCX)
-        print('\t-  DNS neve:  ' + XCC +  newserver.dns + XCX)
-        print('\t- FQND neve:  ' + XCC +  newserver.fqdns + XCX)
-        print('\t-(OLD) neve:  ' + XCC +  newserver.olddns + XCX)
+        print('A megadott adatoka lapján az alábbiaknak megfelelően kerül beállításra a ' + HHLIGHT + str(newserver.cip) + SDARD + ' IP című SZERVER.')
+        print('Kérem ellenőrizd, hogy az adatok a tervezetnek megfelelőek.\n')
+        print(HHLIGHT2 + '\t- ÚJ IP cime:' + SDARD + '  ' + HHLIGHT2 + newserver.nip + SDARD)
+        print('\t-    netmask:  ' + HHLIGHT +  str(newserver.nmask) + SDARD)
+        print('\t-  broadcast:  ' + HHLIGHT +  str(newserver.bcast) + SDARD)
+        print('\t-    gateway:  ' + HHLIGHT +  str(newserver.gway) + SDARD)
+        print('\t-    network:  ' + HHLIGHT +  str(newserver.nwork) + SDARD)
+        print('\t-   DNS neve:  ' + HHLIGHT +  newserver.dns + SDARD)
+        print('\t-  FQND neve:  ' + HHLIGHT +  newserver.fqdns + SDARD)
+        print('\t- (OLD) neve:  ' + HHLIGHT +  newserver.olddns + SDARD)
 
         A = input('Megfelelően az adatok (Y/n):')
         if A == '':
@@ -184,10 +200,10 @@ def interfaces_write():
     f.write('alow-hotplug ens18\n')
     f.write("iface ens18 inet static\n")
     f.write("  address " + newserver.nip + '\n')
-    f.write("  network " + newserver.nwork + '\n')
+    f.write("  network " + str(newserver.nwork) + '\n')
     f.write("  netmask " + str(newserver.nmask) + '\n')
-    f.write("  gateway " + newserver.gway + '\n')
-    f.write("  broadcast " + newserver.bcast + '\n')
+    f.write("  gateway " + str(newserver.gway) + '\n')
+    f.write("  broadcast " + str(newserver.bcast) + '\n')
     f.close()
 
 def hosts_write():
