@@ -32,7 +32,6 @@ def validateip(tmpdata):
     try:
         ip_object = ipaddress.ip_address(tmpdata)
         tmpdata = tmpdata.split(".")
-        print(tmpdata[3])
         if tmpdata[3] == '0' or tmpdata[3] == '255' or tmpdata[3] == '254':
             checkb = 1
         else:
