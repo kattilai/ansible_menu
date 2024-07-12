@@ -216,6 +216,7 @@ def files_write() :
     interfaces_write()
     hosts_write()
 
+
 def main():
     readdatas()
     checkdatas()
